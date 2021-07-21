@@ -1,0 +1,294 @@
+<head>
+
+    <title>CalculatorApplication</title>
+    <meta charset ="UTF-8">
+    <meta name="description" content="Calculator Web Application">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <meta name="author" content="Mike Shea">
+
+    <!--
+
+        todo:
+        allow decimals (will have to add a zero if decimal is last char, only allow one per term)
+        
+        UI overhaul
+        prevent division by zero
+        
+        'enter' should keep current info if there is only one term
+    
+
+        Bugs:
+        
+    -->
+
+    <style>
+
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Calculator Face -->
+    <div id='calculatorFace'>
+
+        <!-- Output -->
+        <div id='calculatorOutput'>
+            <input id='output' readonly></input>
+        </div>
+
+        <!-- Numerical Buttons -->
+        <div id='calculatorButtons'>
+            <button id='7' onClick="append('7')">7</button>
+            <button id='8' onClick="append('8')">8</button>
+            <button id='9' onClick="append('9')">9</button>
+            <br>
+            <button id='4' onClick="append('4')">4</button>
+            <button id='5' onClick="append('5')">5</button>
+            <button id='6' onClick="append('6')">6</button>
+            <br>
+            <button id='1' onClick="append('1')">1</button>
+            <button id='2' onClick="append('2')">2</button>
+            <button id='3' onClick="append('3')">3</button>
+            <br>
+            <button id='0' onClick="append('0')">0</button>
+        </div>
+
+        <br>
+        <br>
+
+        <!-- Operation Buttons -->
+        <div id='operationButtons'>
+            <button id='+' onClick="append('+')">+</button>
+            <button id='-' onClick="append('-')">-</button>
+            <br>
+            <button id='*' onClick="append('*')">*</button>
+            <button id='/' onClick="append('/')">/</button>
+            <br>
+            <button id='=' onClick="calculate()">=</button>
+            <button id='allClear' onClick="allClear()">AC</button>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        // Initialize
+        let currentString = '0';
+        let currentTerm = '0';
+        let stack = [];
+        let operatorCount = 0;
+        document.getElementById('output').value = currentString;
+
+        /*========================
+        Calculator Functions
+        ========================*/
+
+        // Append button elements to the current string
+        function append(x){
+           
+            // No input yet
+            if(currentString == 0){
+                if(x == 0){
+                    // Ignore preceeding zeroes
+                    return;
+                }
+                // Replace zero with input
+                currentString = x;
+                currentTerm = x;
+
+                // Update UI
+                document.getElementById('output').value = currentString;
+
+                return;
+            }
+
+            // Operator character input
+            if(isNaN(x)){
+
+                // Check if input operator is replacing a previous operator
+                if(stack[stack.length-1] == '+' 
+                || stack[stack.length-1] == '-'
+                || stack[stack.length-1] == '*'
+                || stack[stack.length-1] == '/'){
+
+                    // Replace operator
+                    stack.pop();
+                    stack.push(x);
+                    currentString = currentString.substring(0, currentString.length -1);
+                    currentString = currentString + x;
+                    
+                    // Update UI
+                    document.getElementById('output').value = currentString;
+
+                    return;
+                }
+
+                // First operator
+                if(operatorCount == 0){
+
+                    stack.push(currentString);
+                    stack.push(x);
+                    operatorCount++;
+                }
+                else{
+                    // Second Operator
+                    console.log('forced calculation by second operator');
+                    calculate();
+                    stack.push(x);
+                    operatorCount++;
+                }
+               
+                // Operator encountered, currentTerm ended
+                currentTerm = '';
+               
+            }
+
+            // Append string
+            currentString = currentString + x;
+
+            if(!isNaN(x)){
+                currentTerm = currentTerm + x;
+            }
+            
+            console.log('currentString =', currentString);
+            console.log('currentTerm = ', currentTerm);
+            console.log('stack = ', stack);
+           
+
+            // Update UI
+            document.getElementById('output').value = currentString;
+        }
+
+        // Reset the current string
+        function allClear(){
+            // Reset string
+            currentString = '0';
+
+            while(stack.length > 0){
+                stack.pop();
+            }
+           
+            // Update UI
+            document.getElementById('output').value = currentString;
+        }
+
+        // Calculate results of current stack
+        function calculate(){
+
+            // Push currentTerm onto stack
+            console.log('pushing current term = ', currentTerm);
+            stack.push(currentTerm);
+
+            console.log(stack);
+
+            let firstTerm = '';
+            let symbol = '';
+            let secondTerm = '';
+            let answer = 0;
+
+            // Read Second Term
+            secondTerm = Number(stack.pop());
+
+            // Read symbol
+            symbol = stack.pop();
+
+            // Read first term
+            firstTerm = Number(stack.pop());
+
+            console.log('first: ', firstTerm, 'symbol: ', symbol, 'second: ', secondTerm);
+            console.log('stack should be empty. stack: ', stack);
+
+            // Calculate
+            switch(symbol){
+                case '+':
+                    answer = firstTerm + secondTerm;
+                    break;
+                case '-':
+                    answer = firstTerm - secondTerm;
+                    break;
+                case '*':
+                    answer = firstTerm * secondTerm;
+                    break;
+                case '/':
+                    answer = firstTerm / secondTerm;
+                    break;
+
+            }
+
+            console.log('answer: ', answer);
+
+            // Update operatorCount
+            operatorCount = 0;
+
+            // Update UI
+            currentTerm = answer;
+            currentString = answer;
+            document.getElementById('output').value = answer;
+        }
+
+        /*=====================
+        Keyboard Listener
+        =====================*/
+        document.addEventListener('keydown', function (event) {
+        switch(event.key){
+            case '0':
+                append('0');
+                break;
+            case '1':
+                append('1');
+                break;
+            case '2':
+                append('2');
+                break;
+            case '3':
+                append('3');
+                break;
+            case '4':
+                append('4');
+                break;
+            case '5':
+                append('5');
+                break;
+            case '6':
+                append('6');
+                break;
+            case '7':
+                append('7');
+                break;
+            case '8':
+                append('8');
+                break;
+            case '9':
+                append('9');
+                break;
+            case '+':
+                append('+');
+                break;
+            case '-':
+                append('-');
+                break;
+            case '*':
+                append('*');
+                break;
+            case '/':
+                append('/');
+                break;
+            case '=':
+                calculate();
+                break;
+            case 'Enter':
+                calculate();
+                break;
+            case 'Escape':
+                allClear();
+                break;
+            }
+
+        });
+
+    </script>
+
+</body>
