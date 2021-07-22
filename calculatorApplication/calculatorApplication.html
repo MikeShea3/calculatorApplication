@@ -7,18 +7,17 @@
     <meta name="author" content="Mike Shea">
 
     <!--
-
         todo:
-        allow decimals (will have to add a zero if decimal is last char, only allow one per term)
-        
+        scientific functions
+
+        implement parenthesis
         UI overhaul
-        prevent division by zero
-        
-        'enter' should keep current info if there is only one term
     
+        create README.md
 
         Bugs:
-        
+            stupid javascript type error
+
     -->
 
     <style>
@@ -53,6 +52,8 @@
             <button id='3' onClick="append('3')">3</button>
             <br>
             <button id='0' onClick="append('0')">0</button>
+            <button id='.' onClick="append('.')">.</button>
+            <button id='=' onClick="calculate()">=</button>
         </div>
 
         <br>
@@ -66,7 +67,9 @@
             <button id='*' onClick="append('*')">*</button>
             <button id='/' onClick="append('/')">/</button>
             <br>
-            <button id='=' onClick="calculate()">=</button>
+            <button id='^' onClick="append('^')">^</button>
+            <button id='%' onClick="append('%')">%</button>
+            <br>
             <button id='allClear' onClick="allClear()">AC</button>
         </div>
     </div>
@@ -88,25 +91,74 @@
 
         // Append button elements to the current string
         function append(x){
-           
+
+            // Characters that can be appended to a term
+            let operators = ['+', '-', '*', '/', '^', '%']; 
+
+            // Fix to allow for first term to display as 0.x in the case of a decimal < 1.0
+            if(!isNaN(x) && currentTerm == '0.'){
+                currentTerm = currentTerm + x;
+                currentString = currentString + x;
+                document.getElementById('output').value = currentString;
+                return;
+            }
+            
+            // Period inserted
+            if(x == '.'){
+                if(currentTerm.indexOf('.') == -1){
+                    currentString = currentString + x;
+                    currentTerm = currentTerm + x;
+                    document.getElementById('output').value = currentString;
+                    return;
+                }
+                else{
+                    // Don't allow multiple periods
+                    return;
+                }  
+            }
+
             // No input yet
             if(currentString == 0){
+
+                if(operators.includes(x)){
+                    // Don't allow operator as first term
+                    return;
+                }
+
                 if(x == 0){
+
+                    if(currentString.includes('.')){
+                        // Allow zeroes after decimal
+                        currentString = currentString + x;
+                        currentTerm = currentString + x;
+                        document.getElementById('output').value = currentString;
+                        return;
+                    }
+
                     // Ignore preceeding zeroes
                     return;
                 }
-                // Replace zero with input
-                currentString = x;
-                currentTerm = x;
-
+                
+                if(currentTerm.includes('.')){
+                    currentString = currentString + x;
+                    currentTerm = currentTerm + x;
+                }
+                else{
+                    // Replace zero with input
+                    currentString = x;
+                    currentTerm = x;
+                }
+                
+                
                 // Update UI
                 document.getElementById('output').value = currentString;
-
                 return;
             }
 
+            // Check for previous decimal
+
             // Operator character input
-            if(isNaN(x)){
+            if(operators.includes(x)){
 
                 // Check if input operator is replacing a previous operator
                 if(stack[stack.length-1] == '+' 
@@ -149,7 +201,7 @@
             // Append string
             currentString = currentString + x;
 
-            if(!isNaN(x)){
+            if(!operators.includes(x)){
                 currentTerm = currentTerm + x;
             }
             
@@ -177,6 +229,16 @@
 
         // Calculate results of current stack
         function calculate(){
+
+            // Do nothing if there is nothing on the stack (only one term with no operator)
+            if(stack.length == 0){
+                return;
+            }
+
+            // Ensure that currentTerm is not being evaluated with a hanging decimal
+            if(currentTerm[currentTerm.length-1]=='.'){
+                currentTerm = currentTerm + '0';
+            }
 
             // Push currentTerm onto stack
             console.log('pushing current term = ', currentTerm);
@@ -213,9 +275,28 @@
                     answer = firstTerm * secondTerm;
                     break;
                 case '/':
-                    answer = firstTerm / secondTerm;
+                    // Do not allow division by zero
+                    if(secondTerm == 0){
+                        answer = 0;
+                    }
+                    else{
+                        answer = firstTerm / secondTerm;
+                    }
                     break;
-
+                case '^':
+                    answer = firstTerm ** secondTerm;
+                    break;
+                case '%':
+                    if(firstTerm.toString().indexOf('.')== -1){
+                        // Given as a whole number
+                        firstTerm = Number('0.' + firstTerm);
+                    }
+                    else{
+                        // Given as a fraction already
+                        firstTerm = Number(firstTerm / 100);
+                    }
+                    answer = firstTerm * secondTerm;
+                    break;
             }
 
             console.log('answer: ', answer);
@@ -264,6 +345,9 @@
             case '9':
                 append('9');
                 break;
+            case '.':
+                append('.');
+                break;
             case '+':
                 append('+');
                 break;
@@ -273,8 +357,14 @@
             case '*':
                 append('*');
                 break;
+            case '^':
+                append('^');
+                break;
             case '/':
                 append('/');
+                break;
+            case '%':
+                append('%');
                 break;
             case '=':
                 calculate();
@@ -286,7 +376,6 @@
                 allClear();
                 break;
             }
-
         });
 
     </script>
