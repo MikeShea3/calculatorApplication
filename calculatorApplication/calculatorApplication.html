@@ -7,6 +7,7 @@
     <meta name="author" content="Mike Shea">
 
     <!--
+        
         todo:
         scientific functions
 
@@ -17,11 +18,40 @@
 
         Bugs:
             multiple e's allowed in term
-            e calculating wrong (grabbing other terms as factors)
+            e calculating wrong (grabbing other terms as factors (before or after?)))
+
+            first term not allowed to be negative
     -->
 
     <style>
 
+        button{
+            color:black;
+            height:30px;
+            width:30px;
+            font: bold;
+        }
+        #calculatorFace{
+            display:table;
+            margin:auto;
+            border: solid black;
+            width:50%;
+            text-align:center;
+        }
+        #calculatorButtons {
+            font-size:30px;
+            padding-left:10%;
+            float:left;
+        }
+        #operationButtons {
+            font-size:30px;
+            padding-left:10%;
+            float:left;
+        }
+        #scientificOperations{
+            font-size:30px;
+            padding-left:10%;
+        }
 
     </style>
 
@@ -31,50 +61,55 @@
 
     <!-- Calculator Face -->
     <div id='calculatorFace'>
-
+        <br>
         <!-- Output -->
         <div id='calculatorOutput'>
             <input id='output' readonly></input>
         </div>
-
-        <!-- Numerical Buttons -->
-        <div id='calculatorButtons'>
-            <button id='7' onClick="append('7')">7</button>
-            <button id='8' onClick="append('8')">8</button>
-            <button id='9' onClick="append('9')">9</button>
-            <br>
-            <button id='4' onClick="append('4')">4</button>
-            <button id='5' onClick="append('5')">5</button>
-            <button id='6' onClick="append('6')">6</button>
-            <br>
-            <button id='1' onClick="append('1')">1</button>
-            <button id='2' onClick="append('2')">2</button>
-            <button id='3' onClick="append('3')">3</button>
-            <br>
-            <button id='0' onClick="append('0')">0</button>
-            <button id='.' onClick="append('.')">.</button>
-            <button id='=' onClick="calculate()">=</button>
-        </div>
-
-        <br>
         <br>
 
-        <!-- Operation Buttons -->
-        <div id='operationButtons'>
-            <button id='+' onClick="append('+')">+</button>
-            <button id='-' onClick="append('-')">-</button>
-            <br>
-            <button id='*' onClick="append('*')">*</button>
-            <button id='/' onClick="append('/')">/</button>
-            <br>
-            <button id='^' onClick="append('^')">^</button>
-            <button id='%' onClick="append('%')">%</button>
-            <br>
-            <button id='allClear' onClick="allClear()">AC</button>
-        </div>
+        <!-- Wrapper div for all buttons -->
+        <div id='buttons'>
+            
+            <!-- Numerical Buttons -->
+            <div id='calculatorButtons'>
+                <button id='7' onClick="append('7')">7</button>
+                <button id='8' onClick="append('8')">8</button>
+                <button id='9' onClick="append('9')">9</button>
+                <br>
+                <button id='4' onClick="append('4')">4</button>
+                <button id='5' onClick="append('5')">5</button>
+                <button id='6' onClick="append('6')">6</button>
+                <br>
+                <button id='1' onClick="append('1')">1</button>
+                <button id='2' onClick="append('2')">2</button>
+                <button id='3' onClick="append('3')">3</button>
+                <br>
+                <button id='0' onClick="append('0')">0</button>
+                <button id='.' onClick="append('.')">.</button>
+                <button id='=' onClick="calculate()">=</button>
+            </div>
 
-        <div id='scientificOperations'>
-            <button id='e' onClick="append('e')">e</button>
+            <br>
+            <br>
+
+            <!-- Operation Buttons -->
+            <div id='operationButtons'>
+                <button id='+' onClick="append('+')">+</button>
+                <button id='-' onClick="append('-')">-</button>
+                <br>
+                <button id='*' onClick="append('*')">*</button>
+                <button id='/' onClick="append('/')">/</button>
+                <br>
+                <button id='^' onClick="append('^')">^</button>
+                <button id='%' onClick="append('%')">%</button>
+                <br>
+                <button id='allClear' onClick="allClear()">AC</button>
+            </div>
+
+            <div id='scientificOperations'>
+                <button id='e' onClick="append('e')">e</button>
+            </div>
         </div>
     </div>
 
